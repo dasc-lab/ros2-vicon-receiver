@@ -11,32 +11,31 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
+# default to release mode
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -g)
 endif()
 
 include_directories(
   include
-  ${Boost_INCLUDE_DIRS}
-)
+  )
+
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(Boost REQUIRED COMPONENTS thread)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Position.msg"
+add_executable(vicon_client 
+  src/vicon_receiver/communicator.cpp 
 )
-
-ament_export_dependencies(rosidl_default_runtime)
-
-add_executable(vicon_client src/vicon_receiver/communicator.cpp src/vicon_receiver/publisher.cpp)
 target_link_libraries(vicon_client ViconDataStreamSDK_CPP ${Boost_LIBRARIES})
 ament_target_dependencies(vicon_client 
 	rclcpp
@@ -45,15 +44,6 @@ ament_target_dependencies(vicon_client
 	tf2_ros
 	)
 
-get_default_rmw_implementation(rmw_implementation)
-find_package("${rmw_implementation}" REQUIRED)
-get_rmw_typesupport(typesupport_impls "${rmw_implementation}" LANGUAGE "cpp")
-
-foreach(typesupport_impl ${typesupport_impls})
-  rosidl_target_interfaces(vicon_client
-    ${PROJECT_NAME} ${typesupport_impl}
-  )
-endforeach()
 
 install(TARGETS vicon_client DESTINATION lib/${PROJECT_NAME})
 
