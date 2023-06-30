@@ -55,12 +55,34 @@ foreach(typesupport_impl ${typesupport_impls})
   )
 endforeach()
 
-install(TARGETS vicon_client DESTINATION lib/${PROJECT_NAME})
+
+
+
+
+add_executable(vicon_test src/vicon_receiver/vicon_test.cpp) 
+target_link_libraries(vicon_test ViconDataStreamSDK_CPP ${Boost_LIBRARIES})
+ament_target_dependencies(vicon_test
+	rclcpp
+	geometry_msgs
+	tf2
+	tf2_ros
+	)
+
+
+
+
+
+
+
+install(TARGETS 
+	vicon_client
+	vicon_test
+	DESTINATION lib/${PROJECT_NAME})
 
 # Install launch file
 install(DIRECTORY
   launch
-  DESTINATION share/${PROJECT_NAME}/
+  DESTINATION  share/${PROJECT_NAME}/
 )
 
 ament_package()
