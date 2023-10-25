@@ -47,6 +47,7 @@ bool Communicator::connect()
     vicon_client.EnableDebugData();
 
     vicon_client.SetStreamMode(StreamMode::ClientPull);
+    //vicon_client.SetStreamMode(StreamMode::ServerPush);
     vicon_client.SetBufferSize(buffer_size);
 
     msg = "Initialization complete";
